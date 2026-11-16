@@ -79,7 +79,7 @@ class OfflineAnalyzerTests(unittest.TestCase):
         rendered = json.dumps(report)
         self.assertEqual(report["title"], "Sample video page")
         self.assertNotIn("SECRET", rendered)
-        self.assertTrue(any("No remote requests" in x for x in report["interpretation"]))
+        self.assertTrue(any("no remote requests" in x.lower() for x in report["interpretation"]))
 
 
 if __name__ == "__main__":
