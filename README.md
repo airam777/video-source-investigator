@@ -1,31 +1,36 @@
 # Video Source Investigator
 
-A small, local-first research tool for inspecting HTML that you are authorized to examine.
+A local-first research helper for examining HTML/page source that you are authorized to inspect.
 
-## What it does
+## Current capabilities
 
-- Reads a saved HTML page or page-source file.
-- Extracts publicly present video-related metadata and URLs: `<video>`, `<source>`, `<iframe>`, Open Graph video tags, canonical URL, and relevant script/link references.
-- Groups discovered URLs by host so you can see which service appears to provide an embed.
-- Produces a JSON report that can be saved for research notes.
+- Reads a saved HTML or page-source file (no network access required).
+- Finds visible `iframe` embeds, `video`/`source` references, Open Graph/Twitter player metadata, and relevant player links.
+- Groups findings by hosting domain and labels direct media references separately from embed/player pages.
+- Redacts common temporary credentials in query strings and hides direct media paths in reports.
+- Exports a JSON report for research notes.
 
-## What it does not do
+## Run
 
-This tool does not bypass access controls, DRM, paywalls, anti-copy protections, signed URL restrictions, or authentication. It does not call hidden AJAX endpoints, enumerate private APIs, download streams, or identify private uploaders. A visible embed or hosting domain does not prove that a video is authorized.
-
-## Requirements
-
-Python 3.10 or newer. No third-party packages are required.
-
-## Usage
+Requires Python 3.10+; no third-party packages.
 
 ```bash
-python investigator.py path/to/saved-page.html
-python investigator.py path/to/saved-page.html --json report.json
+python investigator.py saved-page.html
+python investigator.py saved-page.html --json report.json
+python -m unittest discover -s tests -v
 ```
 
-Save the page source using your browser's normal page-source or save-page feature, then inspect the local copy. Treat signed or tokenized URLs as sensitive; do not publish reports containing them.
+On Android, save or share the page source as an HTML file, then run the script on a computer with Python. The project currently analyses local files; it does not crawl sites.
 
-## Responsible research
+## Relationship to the public reference project
 
-Only inspect pages and files you have permission to access. If you need to establish whether a video is licensed, use the hosting service's official reporting/contact process or obtain confirmation from the rights holder.
+The project [MatheusJey/stremio-prehraj](https://github.com/MatheusJey/stremio-prehraj) demonstrates a Přehraj.to search-to-stream workflow. Its implementation searches result pages, parses result metadata, and resolves player pages to short-lived direct MP4 stream URLs. It also accepts session cookies and forwards them with playback requests.
+
+This project deliberately implements the safer research subset: inspect supplied/saved page source and identify visible embed/provider clues. It does not automate searches for copyrighted works, replay session cookies, bypass access controls, or resolve/download signed media streams.
+
+## Important limitations
+
+- A hosting domain is not proof of who uploaded a file.
+- A public page or playable embed does not prove that distribution is licensed.
+- Signed URLs can contain temporary access credentials; reports redact common token parameters, but inspect reports before sharing.
+- If you need to verify rights, contact the platform or rights holder and retain the canonical page URL and relevant evidence.
