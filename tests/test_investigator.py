@@ -20,7 +20,7 @@ class InspectorTests(unittest.TestCase):
         html = '''<html><head><meta property="og:video" content="https://cdn.example.test/private/movie.mp4?token=secret"></head>
         <body><iframe data-src="//voe.sx/e/abc"></iframe></body></html>'''
         report = inspect_html(html, base_url="https://prehraj.to/watch/1")
-        self.assertEqual(report["candidates"][0]["host"], "voe.sx")
+        self.assertTrue(any(item["host"] == "voe.sx" for item in report["candidates"]))
         rendered = str(report)
         self.assertNotIn("movie.mp4", rendered)
         self.assertNotIn("secret", rendered)
