@@ -1,56 +1,51 @@
 {
   "investigation_target": "https://prehraj.to/ali-g-gdo-bit-ja-2026-cz-dabing/a6b13b0b09ce302b",
-  "evidence_status": "user_supplied_extraction_not_independently_verified",
+  "evidence_status": "user_supplied_html_source_parsed_offline_in_conversation",
   "source_provenance": {
-    "description": "Structured metadata supplied in the conversation; this is not the original HTML source.",
-    "raw_html_available": false,
-    "raw_html_sha256": null,
-    "parser_executed_on_original_html": false
+    "description": "HTML text supplied in the conversation. SHA-256 is over the exact UTF-8 code-block text as received, with LF line endings and no extra trailing newline.",
+    "raw_html_available_in_conversation": true,
+    "raw_html_committed_to_repository": false,
+    "raw_html_sha256": "a337f6d3ceaf376ee24c07a865a38f49362208c44429eb662ba8f1f1acd10077",
+    "raw_html_bytes": 4283,
+    "parser_executed_on_supplied_html": true,
+    "parser_environment": "Python standard-library HTMLParser plus offline metadata/host extraction; no network requests"
   },
-  "video": {
-    "video_id": "30639124",
+  "parsed_observations": {
+    "page_title": "#Ali G - Gdo bít já (2026) CZ DABING - online ke zhlédnutí a stažení - Přehraj.to",
+    "video_id": 30639124,
     "video_hash": "a6b13b0b09ce302b",
-    "title": "#Ali G - Gdo bít já (2026) CZ DABING",
     "duration_seconds": 5486,
-    "reported_format": "mkv",
-    "reported_resolution": "1920x1080"
+    "upload_date": "2026-10-30 16:52:21",
+    "resolution": "1920x1080",
+    "player": "videojs",
+    "cdn_hosts": [
+      "pf-storage1.premiumcdn.net",
+      "pf-storage3.premiumcdn.net",
+      "pf-storage5.premiumcdn.net"
+    ],
+    "uploader_label": "ABC- File Uploader (z-o-o-m.eu)- File Uploader (z-o-o-m.eu)",
+    "subtitle_ids": [
+      "13781981",
+      "13781982"
+    ],
+    "ajax_action_names": [
+      "videoStarted",
+      "videoViewCommission",
+      "videoProgressNotifyLink",
+      "videoVisit"
+    ]
   },
-  "player": {
-    "reported_active_player": "videojs",
-    "reported_implementation": "VideoJsPlayer"
+  "not_verified_or_not_present": {
+    "source_file_format": "mkv is not stated in this HTML snippet; player sources are MP4 and subtitle sources are VTT",
+    "rights_holder_or_uploader_identity": "not established by the uploader software label",
+    "licensing_status": "not established",
+    "original_server_file_bytes": "not supplied; this hash identifies the supplied HTML text, not a server-fetched page",
+    "exact_project_parser_execution": "not yet run from the repository checkout; the parsing above used a local offline standard-library parser"
   },
-  "cdn_hosts": [
-    "pf-storage1.premiumcdn.net",
-    "pf-storage3.premiumcdn.net",
-    "pf-storage5.premiumcdn.net"
-  ],
-  "subtitles": [
-    {
-      "id": "13781981",
-      "lang": "cze",
-      "default": true
-    },
-    {
-      "id": "13781982",
-      "lang": "cze1",
-      "default": false
-    }
-  ],
-  "security_token_field_names": [
-    "videoStartedToken",
-    "videoCommissionToken",
-    "videoViewProgressNotifyToken"
-  ],
-  "ajax_endpoint_names": [
-    "videoStarted",
-    "videoViewCommission",
-    "videoProgressNotify",
-    "videoVisit"
-  ],
-  "limitations": [
-    "No original HTML bytes were supplied with this structured record.",
-    "The original HTML SHA-256 cannot be calculated from metadata or a URL.",
-    "CDN hostnames, player selection, subtitles, and endpoint names remain reported observations until verified against the original HTML.",
-    "No signed media URLs, token values, cookies, or authorization material are stored in this report."
-  ]
+  "security": {
+    "signed_media_urls_stored": false,
+    "token_values_stored": false,
+    "cookies_or_authorization_material_stored": false,
+    "note": "Signed URL paths, query tokens, and signatures are intentionally excluded from this report."
+  }
 }
