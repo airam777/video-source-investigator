@@ -10,7 +10,8 @@ A local-first research helper for examining HTML/page source that you are author
 - Recognizes common JW Player and Video.js configuration signatures in inline scripts.
 - Classifies explicitly declared media types such as MP4, WebM, HLS playlists (M3U8), and MPEG-DASH manifests (MPD).
 - Groups findings by hosting domain; reports host-level metadata only and does not print media paths or query strings.
-- Exports a JSON report for research notes.
+- Includes a separate offline extractor for media URLs explicitly present in locally saved, authorized HTML.
+- Exports JSON reports for research notes.
 
 ## Run
 
@@ -21,8 +22,11 @@ python investigator.py saved-page.html
 python investigator.py saved-page.html --json report.json
 python prehraj_catalog.py saved-search-results.html --json catalog.json
 python provider_inspector.py saved-page.html --base-url 'https://example.test/watch/...' --json providers.json
+python authorized_stream_extractor.py authorized-page.html --base-url 'https://example.test/watch/...' --json streams.json
 python -m unittest discover -s tests -v
 ```
+
+The authorized extractor recognizes explicit MP4, WebM, HLS, and DASH references in standard HTML media elements, selected social metadata, and plainly quoted `file`/`src` values in inline player configuration. Query strings are redacted by default. For an authorized test fixture only, `--show-full-urls` displays the complete URL, which may contain temporary credentials.
 
 On Android, save or share the page source as an HTML file, then run the script on a computer with Python. Use `prehraj_catalog.py` for a saved Přehraj.to search-results page, `investigator.py` for a saved video/detail page, and `provider_inspector.py` to map visible iframe/link hostnames and recognize player configuration patterns from a saved page.
 
@@ -32,8 +36,8 @@ The project [MatheusJey/stremio-prehraj](https://github.com/MatheusJey/stremio-p
 
 ## Scope and limitations
 
-- The tools do not crawl sites, call hidden AJAX endpoints, replay session cookies, resolve player pages, extract direct streams, or download media.
+- The tools do not crawl sites, call hidden AJAX endpoints, replay session cookies, resolve third-party player pages, execute JavaScript, bypass access controls, or download media.
+- The extractor only reports media URLs explicitly declared in the local HTML supplied to it; it does not discover URLs hidden behind provider-side requests or runtime protections.
 - Player signatures and hosting domains are technical clues, not proof of uploader identity or distribution rights.
 - A public page or playable embed does not prove that distribution is licensed.
-- Signed URLs can contain temporary access credentials; reports intentionally omit paths and query strings.
-- For content you own or are authorized to inspect, use the original platform's documented export/API or provide a local sample page source for analysis.
+- Signed URLs can contain temporary access credentials; reports intentionally omit query strings unless the explicit full-URL option is used for authorized test material.
