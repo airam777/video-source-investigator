@@ -94,6 +94,8 @@ def _safe_value(value: Any, key: str = "") -> Any:
         return [cleaned for item in value
                 if (cleaned := _safe_value(item)) is not None]
     if isinstance(value, str):
+        if key.lower() == "host":
+            return _safe_host(value)
         candidate = value.strip()
         if _SECRET_ASSIGNMENT.search(candidate):
             return "[sensitive value redacted]"
