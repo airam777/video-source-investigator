@@ -8,7 +8,9 @@
     "raw_html_sha256": "a337f6d3ceaf376ee24c07a865a38f49362208c44429eb662ba8f1f1acd10077",
     "raw_html_bytes": 4283,
     "parser_executed_on_supplied_html": true,
-    "parser_environment": "Python standard-library HTMLParser plus offline metadata/host extraction; no network requests"
+    "parser_environment": "Python standard-library HTMLParser plus offline metadata/host extraction; no network requests",
+    "project_parser_executed": false,
+    "project_parser_note": "The supplied HTML was parsed with an ad hoc offline Python standard-library parser in this session; the repository's investigator.py has not yet been executed against this input."
   },
   "parsed_observations": {
     "page_title": "#Ali G - Gdo bít já (2026) CZ DABING - online ke zhlédnutí a stažení - Přehraj.to",
@@ -40,7 +42,7 @@
     "rights_holder_or_uploader_identity": "not established by the uploader software label",
     "licensing_status": "not established",
     "original_server_file_bytes": "not supplied; this hash identifies the supplied HTML text, not a server-fetched page",
-    "exact_project_parser_execution": "not yet run from the repository checkout; the parsing above used a local offline standard-library parser"
+    "exact_project_parser_execution": "not yet run from the repository checkout; this report records a separate local offline parse"
   },
   "security": {
     "signed_media_urls_stored": false,
