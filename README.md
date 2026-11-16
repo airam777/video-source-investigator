@@ -5,6 +5,7 @@ A local-first research helper for examining HTML/page source that you are author
 ## Current capabilities
 
 - Reads a saved HTML or page-source file (no network access required).
+- Parses locally saved Přehraj.to search-result pages for visible title, result-page URL, file size, duration, and thumbnail metadata.
 - Finds visible `iframe` embeds, `video`/`source` references, Open Graph/Twitter player metadata, and relevant player links.
 - Groups findings by hosting domain and labels direct media references separately from embed/player pages.
 - Redacts common temporary credentials in query strings and hides direct media paths in reports.
@@ -17,10 +18,11 @@ Requires Python 3.10+; no third-party packages.
 ```bash
 python investigator.py saved-page.html
 python investigator.py saved-page.html --json report.json
+python prehraj_catalog.py saved-search-results.html --json catalog.json
 python -m unittest discover -s tests -v
 ```
 
-On Android, save or share the page source as an HTML file, then run the script on a computer with Python. The project currently analyses local files; it does not crawl sites.
+On Android, save or share the page source as an HTML file, then run the script on a computer with Python. Use `prehraj_catalog.py` for a saved Přehraj.to search-results page and `investigator.py` for a saved video/detail page. The project currently analyses local files; it does not crawl sites.
 
 ## Relationship to the public reference project
 
