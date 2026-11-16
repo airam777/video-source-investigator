@@ -13,7 +13,7 @@ from pathlib import Path
 
 from authorized_stream_extractor import extract as inspect_media
 from deferred_player_inspector import inspect_html as inspect_deferred
-from investigator import inspect_file
+from investigator import inspect_file, safe_url
 from prehraj_catalog import parse_catalog
 from provider_inspector import inspect as inspect_provider
 
@@ -27,6 +27,12 @@ def analyze(path: Path, base_url: str = "") -> dict:
     deferred = inspect_deferred(path)
     media = inspect_media(path, base_url)
     catalog = parse_catalog(html)
+    catalog_base = base_url or "https://prehraj.to/"
+    for item in catalog:
+        if item.get("page_url"):
+            item["page_url"] = safe_url(item["page_url"], catalog_base)
+        if item.get("thumbnail"):
+            item["thumbnail"] = safe_url(item["thumbnail"], catalog_base)
 
     hosts = sorted({
         item["host"]
@@ -35,7 +41,7 @@ def analyze(path: Path, base_url: str = "") -> dict:
     })
     return {
         "input_file": path.name,
-        "source_page": base_url or page.get("canonical_url"),
+        "source_page": safe_url(base_url) if base_url else page.get("canonical_url"),
         "title": page.get("title") or providers.get("page_title") or None,
         "provider_hosts": hosts,
         "player_configurations": providers.get("player_configurations", []),
