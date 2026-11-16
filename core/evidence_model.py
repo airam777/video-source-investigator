@@ -6,8 +6,8 @@ from enum import Enum
 from types import MappingProxyType
 from typing import Any
 from .identity import canonicalize_payload
-_SHA256 = re.compile(r"[a-f0-9]{64}\\Z")
-_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,127}\\Z")
+_SHA256 = re.compile(r"[a-f0-9]{64}\Z")
+_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,127}\Z")
 class EvidenceStatus(str, Enum):
     FACT = "fact"
     DERIVED = "derived"
