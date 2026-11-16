@@ -27,6 +27,7 @@ class ProviderInspectorTests(unittest.TestCase):
         kinds = {x["media_type"] for x in report["references"]}
         self.assertIn("MP4", kinds)
         self.assertIn("HLS playlist", kinds)
+        self.assertFalse(any(x["player_host_hint"] for x in report["references"] if x["host"] == "media.example.test"))
         rendered = str(report)
         self.assertNotIn("secret", rendered)
         self.assertNotIn("demo.mp4", rendered)
