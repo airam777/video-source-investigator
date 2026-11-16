@@ -15,8 +15,9 @@ from pathlib import Path
 from urllib.parse import urljoin, urlparse
 
 PLAYER_HOST_HINTS = (
-    "voe.sx", "mixdrop", "vidsrc", "vidstream", "streamtape",
-    "dood", "filemoon", "streamwish", "mp4upload",
+    "voe.sx", "mixdrop.co", "mixdrop.to", "vidsrc.me", "vidsrc.to",
+    "streamtape.com", "doodstream.com", "dood.to", "filemoon.sx",
+    "streamwish.to", "mp4upload.com",
 )
 MEDIA_EXTENSIONS = {
     ".mp4": "MP4", ".m4v": "M4V", ".webm": "WebM",
