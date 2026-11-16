@@ -55,6 +55,16 @@ class LegacyReportAdapterTests(unittest.TestCase):
         self.assertNotIn("DO_NOT_KEEP", rendered)
         self.assertNotIn("token", rendered)
 
+    def test_redacts_urls_embedded_in_report_text(self):
+        report = {"interpretation": [
+            "Reference: https://cdn.example.test/private/file.mp4?token=DO_NOT_KEEP."
+        ]}
+        graph = LegacyReportAdapter().adapt(report, self.context)
+        rendered = json.dumps([item.value.value for item in graph.observations], default=str)
+        self.assertIn("cdn.example.test", rendered)
+        self.assertNotIn("private/file.mp4", rendered)
+        self.assertNotIn("DO_NOT_KEEP", rendered)
+
     def test_builds_provenance_backed_reference_relation(self):
         graph = LegacyReportAdapter().adapt(self.report, self.context)
         self.assertEqual(len(graph.relations), 1)
