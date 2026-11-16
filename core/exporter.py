@@ -122,5 +122,5 @@ def export_evidence(graph: EvidenceGraphContainer, destination: Path) -> dict[st
     """Write a deterministic evidence audit envelope and return its payload."""
     path = Path(destination)
     rendered = render_evidence_json(graph)
-    path.write_text(rendered, encoding="utf-8", newline="\n")
+    path.write_bytes(rendered.encode("utf-8"))
     return json.loads(rendered)
