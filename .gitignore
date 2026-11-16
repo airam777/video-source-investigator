@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.pytest_cache/
+.DS_Store
+report.json
+full-report.json
+catalog.json
+providers.json
+loader.json
