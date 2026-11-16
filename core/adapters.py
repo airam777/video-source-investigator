@@ -78,7 +78,11 @@ def _safe_value(value: Any, key: str = "") -> Any:
             return "[sensitive value redacted]"
         if candidate.startswith(("http://", "https://")):
             return _host_reference(candidate)
-        return candidate
+        def redact_match(match: re.Match[str]) -> str:
+            raw_url = match.group(0).rstrip(".,;)]}")
+            suffix = match.group(0)[len(raw_url):]
+            return _host_reference(raw_url) + suffix
+        return re.sub(r"https?://\\S+", redact_match, candidate)
     if value is None or isinstance(value, (bool, int, float)):
         return value
     return str(value)[:1000]
