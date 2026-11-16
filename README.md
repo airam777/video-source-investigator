@@ -18,16 +18,18 @@ A local-first research helper for examining HTML/page source that you are author
 Requires Python 3.10+; no third-party packages.
 
 ```bash
+python analyze_page.py saved-page.html --base-url 'https://prehraj.to/watch/...' --json full-report.json
 python investigator.py saved-page.html
 python investigator.py saved-page.html --base-url 'https://prehraj.to/watch/...' --json report.json
 python prehraj_catalog.py saved-search-results.html --json catalog.json
 python provider_inspector.py saved-page.html --base-url 'https://example.test/watch/...' --json providers.json
 python deferred_player_inspector.py saved-page.html --json loader.json
-python authorized_stream_extractor.py authorized-page.html --base-url 'https://example.test/watch/...' --json streams.json
 python -m unittest discover -s tests -v
 ```
 
 The media-reference inspector recognizes explicitly declared MP4, WebM, HLS (M3U8), and MPEG-DASH (MPD) references in standard HTML media elements, selected social metadata, and plainly quoted `file`/`src` values in inline player configuration. It reports provider host and media format only: media paths and query strings are always hidden, so reports cannot be used as playback links.
+
+`analyze_page.py` combines the available offline inspectors into one JSON report. The individual tools remain available for focused debugging. The media-reference inspector reports only provider host and format; it never outputs a playable URL.
 
 The deferred-player inspector is static: it reports that a page declares a loader request and summarizes its visible configuration. It does not call the endpoint, fetch provider pages, replay browser sessions, or resolve streams.
 
