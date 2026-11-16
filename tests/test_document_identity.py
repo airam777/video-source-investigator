@@ -8,8 +8,8 @@ class DocumentIdentityTests(unittest.TestCase):
         with self.assertRaises(ValueError): DocumentIdentity("A" * 64, 0)
         with self.assertRaises(ValueError): DocumentIdentity("a" * 64, True)
     def test_payload_normalizes_nfc_and_detects_collisions(self):
-        self.assertEqual(canonicalize_payload({"e\\u0301": "e\\u0301"}), {"é": "é"})
-        with self.assertRaises(ValueError): canonicalize_payload({"é": 1, "e\\u0301": 2})
+        self.assertEqual(canonicalize_payload({"e\u0301": "e\u0301"}), {"é": "é"})
+        with self.assertRaises(ValueError): canonicalize_payload({"é": 1, "e\u0301": 2})
     def test_aggregated_string_budget_boundary(self):
         exact = ["a" * 10000 for _ in range(51)] + ["b" * 2000]
         canonicalize_payload(exact, max_aggregated_string_bytes=512000)
