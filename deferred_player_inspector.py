@@ -56,8 +56,11 @@ def inspect_html(path: Path) -> dict:
             for key, value in re.findall(r"""([A-Za-z_$][\w$]*)\s*:\s*(['"])(.*?)\2""", data_match.group(1), re.S):
                 keys.append(key)
                 # Values can contain content identifiers; do not expose arbitrary values.
-                values[key] = value if key in {"url", "imdb_id", "tmdb_id", "name", "nazovprehraj"} else "[redacted]"
+                values[key] = "[redacted]"
         endpoint = url_match.group(1) if url_match else None
+        if endpoint:
+            parsed_endpoint = urlparse(endpoint)
+            endpoint = (parsed_endpoint.netloc + parsed_endpoint.path) if parsed_endpoint.netloc else parsed_endpoint.path
         declarations.append({
             "endpoint_declared_in_source": endpoint,
             "method": (method_match or type_match).group(1).upper() if (method_match or type_match) else "unspecified",
