@@ -53,7 +53,7 @@ def inspect_html(path: Path) -> dict:
         keys = []
         values = {}
         if data_match:
-            for key, value in re.findall(r"""([A-Za-z_$][\w$]*)\s*:\s*(['"])(.*?)\2""", data_match.group(1), re.S):
+            for key, _quote, _value in re.findall(r"""([A-Za-z_$][\w$]*)\s*:\s*(['"])(.*?)\2""", data_match.group(1), re.S):
                 keys.append(key)
                 # Values can contain content identifiers; do not expose arbitrary values.
                 values[key] = "[redacted]"
