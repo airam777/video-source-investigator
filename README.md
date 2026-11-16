@@ -44,3 +44,12 @@ The project [MatheusJey/stremio-prehraj](https://github.com/MatheusJey/stremio-p
 - Player signatures and hosting domains are technical clues, not proof of uploader identity or distribution rights.
 - A public page or playable embed does not prove that distribution is licensed.
 - Signed URLs can contain temporary access credentials; reports intentionally omit query strings unless the explicit full-URL option is used for authorized test material.
+
+
+## Reference implementation analysis
+
+See [`docs/reference-project-analysis.md`](docs/reference-project-analysis.md) for a source-based breakdown of the public `MatheusJey/stremio-prehraj` architecture and how this passive investigation toolkit differs.
+
+## Continuous integration
+
+GitHub Actions runs the Python test suite on pushes and pull requests using `.github/workflows/tests.yml`.
