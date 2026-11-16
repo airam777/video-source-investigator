@@ -35,11 +35,10 @@ def classify(url: str, mime: str = "") -> str | None:
     }.get(mime.lower().split(";", 1)[0].strip())
 
 
-def safe_url(url: str, show_full: bool) -> str:
-    if show_full:
-        return url
+def safe_url(url: str) -> str:
+    """Return host-level evidence only; never expose a playable media URL."""
     p = urlparse(url)
-    return urlunparse((p.scheme, p.netloc, p.path, "", "REDACTED" if p.query else "", ""))
+    return f"{p.scheme}://{p.netloc}/[media URL hidden]"
 
 
 class MediaParser(HTMLParser):
@@ -85,7 +84,7 @@ class MediaParser(HTMLParser):
             self.items.append({"type": kind, "source": source, "url": url})
 
 
-def extract(path: Path, base_url: str = "", show_full: bool = False):
+def extract(path: Path, base_url: str = ""):
     parser = MediaParser(base_url)
     parser.feed(path.read_text(encoding="utf-8", errors="replace"))
     unique, seen = [], set()
@@ -97,18 +96,18 @@ def extract(path: Path, base_url: str = "", show_full: bool = False):
                 "type": item["type"],
                 "source": item["source"],
                 "host": urlparse(item["url"]).hostname,
-                "url": safe_url(item["url"], show_full),
+                "url": safe_url(item["url"]),
             })
     return {
         "input_file": path.name,
         "matches": unique,
         "count": len(unique),
-        "full_urls_shown": show_full,
+        "full_urls_shown": False,
         "limitations": [
             "Local HTML only; no network requests or JavaScript execution.",
             "Does not inspect provider pages, hidden endpoints, cookies, or browser sessions.",
             "Only explicit MP4, WebM, HLS, and DASH references are recognized.",
-            "Query strings are redacted unless --show-full-urls is explicitly supplied.",
+            "Media paths and query strings are always hidden; reports are for provider identification, not playback.",
         ],
     }
 
@@ -117,10 +116,9 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("html", type=Path, help="Saved HTML from an authorized test page")
     ap.add_argument("--base-url", default="", help="Page URL for resolving relative media paths")
-    ap.add_argument("--show-full-urls", action="store_true", help="Show query strings; use only for authorized test material")
     ap.add_argument("--json", dest="json_path", type=Path, help="Write report to a JSON file")
     args = ap.parse_args()
-    report = extract(args.html, args.base_url, args.show_full_urls)
+    report = extract(args.html, args.base_url)
     rendered = json.dumps(report, ensure_ascii=False, indent=2)
     print(rendered)
     if args.json_path:
