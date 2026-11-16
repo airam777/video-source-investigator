@@ -56,14 +56,20 @@ class Inspector(HTMLParser):
                     self.items.append({"kind": "metadata", "attribute": key, "url": a["content"]})
         if tag == "link" and "canonical" in a.get("rel", "").lower().split():
             self.canonical = a.get("href")
-        if tag == "iframe" and a.get("src"):
-            self.items.append({"kind": "embed", "attribute": "src", "url": a["src"]})
+        if tag == "iframe":
+            for attr in ("src", "data-src", "data-lazy-src", "data-original"):
+                if a.get(attr):
+                    self.items.append({"kind": "embed", "attribute": attr, "url": a[attr]})
+                    break
         if tag == "video":
-            for attr in ("src", "poster"):
+            for attr in ("src", "data-src", "poster"):
                 if a.get(attr):
                     self.items.append({"kind": "video", "attribute": attr, "url": a[attr]})
-        if tag == "source" and a.get("src"):
-            self.items.append({"kind": "source", "attribute": "src", "url": a["src"]})
+        if tag == "source":
+            for attr in ("src", "data-src"):
+                if a.get(attr):
+                    self.items.append({"kind": "source", "attribute": attr, "url": a[attr]})
+                    break
         if tag in {"script", "a"}:
             attr = "src" if tag == "script" else "href"
             value = a.get(attr)
@@ -79,10 +85,10 @@ class Inspector(HTMLParser):
             self.title.append(data.strip())
 
 
-def inspect_html(html: str, source_name: str = "<memory>") -> dict:
+def inspect_html(html: str, source_name: str = "<memory>", base_url: str = "") -> dict:
     parser = Inspector()
     parser.feed(html)
-    base = parser.canonical or ""
+    base = parser.canonical or base_url or ""
     # Catch visible literal media URLs in inline player configuration, but
     # do not return their full signed paths or query strings.
     for match in re.findall(r"""https?://[^\s"'<>\\]+""", html, flags=re.I):
@@ -114,7 +120,7 @@ def inspect_html(html: str, source_name: str = "<memory>") -> dict:
         "source": source_name,
         "title": " ".join(x for x in parser.title if x) or None,
         "canonical_url": safe_url(parser.canonical, base) if parser.canonical else None,
-        "video_metadata": {k: safe_url(v, base) for k, v in parser.meta.items()
+        "video_metadata": {k: _safe_reference(v, base) for k, v in parser.meta.items()
                            if k in VIDEO_META_KEYS},
         "candidates": candidates,
         "hosts_by_kind": dict(sorted(hosts.items())),
@@ -122,18 +128,27 @@ def inspect_html(html: str, source_name: str = "<memory>") -> dict:
     }
 
 
-def inspect_file(path: Path) -> dict:
-    return inspect_html(path.read_text(encoding="utf-8", errors="replace"), str(path))
+def _safe_reference(value: str, base: str = "") -> str:
+    resolved = safe_url(value, base)
+    parsed = urlparse(resolved)
+    if is_media_url(resolved):
+        return f"{parsed.scheme}://{parsed.netloc}/[media URL hidden]"
+    return resolved
+
+
+def inspect_file(path: Path, base_url: str = "") -> dict:
+    return inspect_html(path.read_text(encoding="utf-8", errors="replace"), str(path), base_url)
 
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("html_file", type=Path, help="Saved HTML/page-source file")
+    ap.add_argument("--base-url", default="", help="Original page URL for resolving relative references")
     ap.add_argument("--json", dest="json_path", type=Path, help="Write report to a JSON file")
     args = ap.parse_args()
     if not args.html_file.is_file():
         ap.error(f"File not found: {args.html_file}")
-    report = inspect_file(args.html_file)
+    report = inspect_file(args.html_file, args.base_url)
     rendered = json.dumps(report, ensure_ascii=False, indent=2)
     print(rendered)
     if args.json_path:
