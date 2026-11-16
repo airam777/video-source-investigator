@@ -28,14 +28,16 @@ class AuthorizedStreamExtractorTests(unittest.TestCase):
         self.assertIn("WebM", rendered)
         self.assertIn("HLS", rendered)
 
-    def test_full_urls_are_only_shown_when_explicitly_requested(self):
+    def test_media_paths_and_tokens_are_never_exposed(self):
         html = '<video src="https://cdn.example.test/movie.mp4?token=abc"></video>'
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / "authorized.html"
             path.write_text(html, encoding="utf-8")
-            report = extract(path, show_full=True)
+            report = extract(path)
 
-        self.assertIn("token=abc", report["matches"][0]["url"])
+        self.assertEqual(report["matches"][0]["url"], "https://cdn.example.test/[media URL hidden]")
+        self.assertNotIn("movie.mp4", str(report))
+        self.assertNotIn("token=abc", str(report))
 
 
 if __name__ == "__main__":
