@@ -78,8 +78,9 @@ class EvidenceRelation:
         for name in ("source_id", "target_id"):
             value = getattr(self, name)
             if not isinstance(value, str) or not _ID.fullmatch(value): raise ValueError("Invalid relation endpoint.")
+        if not isinstance(self.source_observation_ids, (tuple, list)): raise ValueError("source_observation_ids must be a tuple or list.")
         ids = tuple(self.source_observation_ids)
-        if not ids or any(not isinstance(x, str) or not _ID.fullmatch(x) for x in ids): raise ValueError("Relations must cite one or more valid source observations.")
+        if not ids or len(set(ids)) != len(ids) or any(not isinstance(x, str) or not _ID.fullmatch(x) for x in ids): raise ValueError("Relations must cite unique, valid source observations.")
         object.__setattr__(self, "source_observation_ids", ids)
         if not isinstance(self.evidence_status, EvidenceStatus): object.__setattr__(self, "evidence_status", EvidenceStatus(self.evidence_status))
 @dataclass(frozen=True, slots=True)
