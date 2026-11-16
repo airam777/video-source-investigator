@@ -56,6 +56,27 @@ def _host_reference(value: str) -> str:
     return f"{parsed.scheme.lower()}://{parsed.netloc}/[reference hidden]"
 
 
+def _safe_host(value: str) -> str | None:
+    """Accept only a bare hostname/IP; never preserve authority extras or URL paths."""
+    candidate = value.strip()
+    try:
+        parsed = urlsplit("https://" + candidate + "/")
+        if (
+            not parsed.hostname
+            or parsed.username is not None
+            or parsed.password is not None
+            or parsed.port is not None
+            or parsed.path != "/"
+            or parsed.query
+            or parsed.fragment
+        ):
+            return None
+        validate_url("https://" + candidate + "/")
+        return parsed.hostname.lower()
+    except ValueError:
+        return None
+
+
 def _safe_value(value: Any, key: str = "") -> Any:
     """Copy report data while removing secrets and URL paths."""
     if key and _SENSITIVE_KEY.search(key):
@@ -148,13 +169,14 @@ class LegacyReportAdapter:
         for index, item in enumerate(report.get("visible_references", [])):
             if not isinstance(item, dict):
                 continue
-            host = item.get("host")
+            raw_host = item.get("host")
+            host = _safe_host(raw_host) if isinstance(raw_host, str) else None
             source = next(
                 (obs for obs in field_observations.get("visible_references", [])
                  if obs.locator == "report.visible_references"),
                 None,
             )
-            if not source or not isinstance(host, str) or not host:
+            if not source or not host:
                 continue
             host_observation = self._observation(
                 context=context,
