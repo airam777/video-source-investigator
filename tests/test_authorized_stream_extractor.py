@@ -23,7 +23,7 @@ class AuthorizedStreamExtractorTests(unittest.TestCase):
         self.assertEqual(report["count"], 3)
         rendered = str(report)
         self.assertNotIn("secret", rendered)
-        self.assertIn("REDACTED", rendered)
+        self.assertIn("[media URL hidden]", rendered)
         self.assertIn("MP4", rendered)
         self.assertIn("WebM", rendered)
         self.assertIn("HLS", rendered)
