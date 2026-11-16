@@ -19,7 +19,7 @@ Requires Python 3.10+; no third-party packages.
 
 ```bash
 python investigator.py saved-page.html
-python investigator.py saved-page.html --json report.json
+python investigator.py saved-page.html --base-url 'https://prehraj.to/watch/...' --json report.json
 python prehraj_catalog.py saved-search-results.html --json catalog.json
 python provider_inspector.py saved-page.html --base-url 'https://example.test/watch/...' --json providers.json
 python deferred_player_inspector.py saved-page.html --json loader.json
