@@ -103,7 +103,7 @@ class PageInspector(HTMLParser):
         self.references.append({
             "kind": kind,
             "host": host,
-            "player_host_hint": any(hint in host for hint in PLAYER_HOST_HINTS),
+            "player_host_hint": any(host == hint or host.endswith("." + hint) for hint in PLAYER_HOST_HINTS),
             "media_type": media_kind(absolute, mime) if kind == "media-element" else "",
             "has_non_root_path": parsed.path not in ("", "/"),
             "has_query": bool(parsed.query),
@@ -131,7 +131,7 @@ class PageInspector(HTMLParser):
             self.references.append({
                 "kind": "player-config-source",
                 "host": parsed.hostname.lower(),
-                "player_host_hint": any(hint in parsed.hostname.lower() for hint in PLAYER_HOST_HINTS),
+                "player_host_hint": any(parsed.hostname.lower() == hint or parsed.hostname.lower().endswith("." + hint) for hint in PLAYER_HOST_HINTS),
                 "media_type": media_kind(raw, default_mime.group(1) if default_mime else ""),
                 "has_non_root_path": parsed.path not in ("", "/"),
                 "has_query": bool(parsed.query),
