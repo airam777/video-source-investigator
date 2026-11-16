@@ -1,6 +1,6 @@
 # Video Source Investigator
 
-Local-first tooling for documenting the public structure of a video page from HTML that you are authorized to inspect.
+Local-first tooling for documenting the public structure and attribution evidence of a video page from HTML that you are authorized to inspect.
 
 ## What it does
 
@@ -8,6 +8,7 @@ Local-first tooling for documenting the public structure of a video page from HT
 - Finds visible iframe references, lazy-loaded embed attributes, video/source elements, and Open Graph/Twitter player metadata.
 - Recognizes common JW Player and Video.js configuration signatures.
 - Identifies declared media formats (MP4, WebM, HLS/M3U8, MPEG-DASH/MPD) and the associated host.
+- Extracts explicit uploader/author attribution from metadata, JSON-LD, microdata, and visibly labelled profile links.
 - Inspects declared deferred-loader requests (such as jQuery AJAX) without sending them.
 - Produces one consolidated JSON report using `analyze_page.py`.
 - Redacts media paths and sensitive query parameters. It does not output playable media URLs.
@@ -26,6 +27,7 @@ Focused tools:
 python investigator.py saved-page.html --base-url 'https://prehraj.to/your/video/page'
 python prehraj_catalog.py saved-search-results.html --json catalog.json
 python provider_inspector.py saved-page.html --base-url 'https://prehraj.to/your/video/page' --json providers.json
+python provenance_inspector.py saved-page.html --base-url 'https://prehraj.to/your/video/page'
 python deferred_player_inspector.py saved-page.html --json loader.json
 python -m unittest discover -s tests -v
 ```
@@ -37,9 +39,12 @@ The consolidated report includes:
 - page title and source URL;
 - provider/iframe hostnames and player-library clues;
 - visible reference attributes, with media paths hidden;
+- explicit uploader or page-author attribution, when present in the supplied source;
 - static deferred-loader declarations, endpoint path, HTTP method, and parameter names;
 - media format and host evidence;
 - catalog metadata if the supplied HTML is a search-results page.
+
+An author label is not automatically treated as an uploader. Even an explicit uploader name or profile link does not establish that the account owns the film or had permission to distribute it.
 
 ## Android source capture
 
@@ -56,6 +61,7 @@ This repository deliberately implements offline inspection only. It does not fet
 ## Interpretation and limitations
 
 - A referenced host is a technical clue, not proof of who uploaded the content.
+- A page author is not necessarily the uploader.
 - A media host or format does not establish distribution rights.
 - A public page or playable embed does not prove that distribution is licensed.
 - Dynamic content loaded only at runtime will not appear in a static HTML report.
