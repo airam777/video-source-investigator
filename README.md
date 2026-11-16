@@ -11,6 +11,7 @@ Local-first tooling for documenting the public structure and attribution evidenc
 - Extracts explicit uploader/author attribution from metadata, JSON-LD, microdata, and visibly labelled profile links.
 - Inspects declared deferred-loader requests (such as jQuery AJAX) without sending them.
 - Produces one consolidated JSON report using `analyze_page.py`.
+- Exports sanitized JSON and Markdown reports with provenance preserved and sensitive values redacted using `report_exporter.py`.
 - Redacts media paths and sensitive query parameters. It does not output playable media URLs.
 
 ## Quick start
@@ -25,6 +26,7 @@ Focused tools:
 
 ```bash
 python investigator.py saved-page.html --base-url 'https://prehraj.to/your/video/page'
+python report_exporter.py report.json --json report-redacted.json --markdown report.md
 python prehraj_catalog.py saved-search-results.html --json catalog.json
 python provider_inspector.py saved-page.html --base-url 'https://prehraj.to/your/video/page' --json providers.json
 python provenance_inspector.py saved-page.html --base-url 'https://prehraj.to/your/video/page'
