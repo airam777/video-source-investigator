@@ -27,7 +27,7 @@ python authorized_stream_extractor.py authorized-page.html --base-url 'https://e
 python -m unittest discover -s tests -v
 ```
 
-The authorized extractor recognizes explicit MP4, WebM, HLS, and DASH references in standard HTML media elements, selected social metadata, and plainly quoted `file`/`src` values in inline player configuration. Query strings are redacted by default. For an authorized test fixture only, `--show-full-urls` displays the complete URL, which may contain temporary credentials.
+The media-reference inspector recognizes explicitly declared MP4, WebM, HLS (M3U8), and MPEG-DASH (MPD) references in standard HTML media elements, selected social metadata, and plainly quoted `file`/`src` values in inline player configuration. It reports provider host and media format only: media paths and query strings are always hidden, so reports cannot be used as playback links.
 
 The deferred-player inspector is static: it reports that a page declares a loader request and summarizes its visible configuration. It does not call the endpoint, fetch provider pages, replay browser sessions, or resolve streams.
 
