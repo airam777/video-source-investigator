@@ -26,7 +26,7 @@ class ReportExporterTests(unittest.TestCase):
         self.assertNotIn("Bearer-secret", rendered)
         self.assertNotIn("/private/movie.mp4", rendered)
         self.assertNotIn("/private/subs.vtt", rendered)
-        self.assertIn("quality=1080", rendered)
+        self.assertNotIn("quality=1080", rendered)
         self.assertIn("id=42", rendered)
         self.assertEqual(self.report["parsed_observations"]["media"].split("?")[1],
                          "token=secret123&quality=1080")
