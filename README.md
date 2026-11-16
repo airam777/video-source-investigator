@@ -9,8 +9,8 @@ A local-first research helper for examining HTML/page source that you are author
 - Finds visible iframe embeds, video/source references, Open Graph/Twitter player metadata, and relevant player links.
 - Recognizes common JW Player and Video.js configuration signatures in inline scripts.
 - Classifies explicitly declared media types such as MP4, WebM, HLS playlists (M3U8), and MPEG-DASH manifests (MPD).
-- Groups findings by hosting domain; reports host-level metadata only and does not print media paths or query strings.
-- Includes a separate offline extractor for media URLs explicitly present in locally saved, authorized HTML.
+- Inspects deferred player-loader declarations in saved HTML, including declared AJAX endpoint, method, parameter names, and related DOM selectors, without sending the request.
+- Includes an offline extractor for media URLs explicitly present in locally saved, authorized HTML.
 - Exports JSON reports for research notes.
 
 ## Run
@@ -22,11 +22,14 @@ python investigator.py saved-page.html
 python investigator.py saved-page.html --json report.json
 python prehraj_catalog.py saved-search-results.html --json catalog.json
 python provider_inspector.py saved-page.html --base-url 'https://example.test/watch/...' --json providers.json
+python deferred_player_inspector.py saved-page.html --json loader.json
 python authorized_stream_extractor.py authorized-page.html --base-url 'https://example.test/watch/...' --json streams.json
 python -m unittest discover -s tests -v
 ```
 
 The authorized extractor recognizes explicit MP4, WebM, HLS, and DASH references in standard HTML media elements, selected social metadata, and plainly quoted `file`/`src` values in inline player configuration. Query strings are redacted by default. For an authorized test fixture only, `--show-full-urls` displays the complete URL, which may contain temporary credentials.
+
+The deferred-player inspector is static: it reports that a page declares a loader request and summarizes its visible configuration. It does not call the endpoint, fetch provider pages, replay browser sessions, or resolve streams.
 
 On Android, save or share the page source as an HTML file, then run the script on a computer with Python. Use `prehraj_catalog.py` for a saved Přehraj.to search-results page, `investigator.py` for a saved video/detail page, and `provider_inspector.py` to map visible iframe/link hostnames and recognize player configuration patterns from a saved page.
 
