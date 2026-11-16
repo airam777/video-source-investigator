@@ -130,9 +130,9 @@ def inspect_html(html: str, source_name: str = "<memory>", base_url: str = "") -
 def _safe_reference(value: str, base: str = "") -> str:
     resolved = safe_url(value, base)
     parsed = urlparse(resolved)
-    if is_media_url(resolved):
-        return f"{parsed.scheme}://{parsed.netloc}/[media URL hidden]"
-    return resolved
+    if parsed.scheme in {"http", "https"} and parsed.hostname:
+        return f"{parsed.scheme}://{parsed.netloc}/[reference hidden]"
+    return "[non-http reference hidden]"
 
 
 def inspect_file(path: Path, base_url: str = "") -> dict:
