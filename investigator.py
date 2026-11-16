@@ -17,15 +17,14 @@ from urllib.parse import urljoin, urlparse, urlunparse, parse_qsl, urlencode
 VIDEO_META_KEYS = {"og:video", "og:video:url", "og:video:secure_url",
                    "twitter:player", "twitter:player:stream"}
 MEDIA_EXTENSIONS = (".mp4", ".m3u8", ".mpd", ".webm", ".mov", ".m4v")
-SENSITIVE_KEYS = {"token", "expires", "signature", "sig", "auth", "key",
-                  "jwt", "session", "phpsessid", " Policy".strip()}
+SENSITIVE_KEY_PATTERN = re.compile(r"token|expires|signature|sig|auth|key|policy|credential|jwt|session|pass", re.I)
 
 
 def safe_url(value: str, base: str | None = None) -> str:
     absolute = urljoin(base or "", value.strip())
     p = urlparse(absolute)
     # Keep non-sensitive query parameters; hide credentials and signed tokens.
-    query = [(k, "[REDACTED]" if k.lower() in SENSITIVE_KEYS else v)
+    query = [(k, "[REDACTED]" if SENSITIVE_KEY_PATTERN.search(k) else v)
              for k, v in parse_qsl(p.query, keep_blank_values=True)]
     return urlunparse((p.scheme, p.netloc, p.path, p.params, urlencode(query), ""))
 
