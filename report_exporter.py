@@ -89,6 +89,18 @@ def render_markdown(report: dict[str, Any]) -> str:
         for key, value in data.items():
             lines.append(f"| {_markdown_value(key)} | {_markdown_value(value)} |")
     validation = validate_report(report)
+    known = {"investigation_target", "evidence_status", "source_provenance", "parsed_observations", "not_verified_or_not_present", "security"}
+    for key, value in safe.items():
+        if key in known:
+            continue
+        lines.extend(["", f"## {str(key).replace('_', ' ').title()}", ""])
+        if isinstance(value, dict):
+            lines.extend(["| Pole | Hodnota |", "|---|---|"])
+            lines.extend(f"| {_markdown_value(k)} | {_markdown_value(v)} |" for k, v in value.items())
+        elif isinstance(value, list):
+            lines.extend(f"- {_markdown_value(item)}" for item in value)
+        else:
+            lines.append(_markdown_value(value))
     lines.extend([
         "",
         "## Kontrola exportu",
