@@ -23,22 +23,20 @@ MEDIA_EXTENSIONS = {
     ".m3u8": "HLS playlist", ".mpd": "MPEG-DASH manifest",
     ".mp3": "MP3 audio", ".m4a": "M4A audio",
 }
-URL_RE = re.compile(r"""(?:https?:)?//[^\s"'<>\\]+""", re.I)
 
 
 def media_kind(value: str, mime: str = "") -> str:
-    mime = mime.lower().split(";", 1)[0].strip()
-    if mime:
-        known = {
-            "video/mp4": "MP4", "application/vnd.apple.mpegurl": "HLS playlist",
-            "application/x-mpegurl": "HLS playlist",
-            "application/dash+xml": "MPEG-DASH manifest",
-            "video/webm": "WebM", "audio/mpeg": "MP3 audio",
-        }
-        if mime in known:
-            return known[mime]
     suffix = Path(urlparse(value).path).suffix.lower()
-    return MEDIA_EXTENSIONS.get(suffix, "unspecified / unknown")
+    if suffix in MEDIA_EXTENSIONS:
+        return MEDIA_EXTENSIONS[suffix]
+    mime = mime.lower().split(";", 1)[0].strip()
+    known = {
+        "video/mp4": "MP4", "application/vnd.apple.mpegurl": "HLS playlist",
+        "application/x-mpegurl": "HLS playlist",
+        "application/dash+xml": "MPEG-DASH manifest",
+        "video/webm": "WebM", "audio/mpeg": "MP3 audio",
+    }
+    return known.get(mime, "unspecified / unknown")
 
 
 class PageInspector(HTMLParser):
@@ -79,7 +77,7 @@ class PageInspector(HTMLParser):
             if raw:
                 self.add_reference("media-element", raw, a.get("type", ""))
         if tag == "video" and a.get("data-setup"):
-            self.player_configs.append({"player": "video.js", "configuration": "data-setup attribute"})
+            self.player_configs.append({"player": "Video.js", "configuration": "data-setup attribute"})
 
     def handle_endtag(self, tag):
         tag = tag.lower()
@@ -117,8 +115,6 @@ class PageInspector(HTMLParser):
             self.player_configs.append({"player": "JW Player", "configuration": "setup/config reference"})
         if "videojs(" in lower or "video.js" in lower:
             self.player_configs.append({"player": "Video.js", "configuration": "initialization/config reference"})
-        # Inspect only URLs explicitly assigned to common player source keys.
-        # Keep host and media type; never retain or print path/query/token data.
         source_pattern = re.compile(
             r"""(?:file|src|contenturl)\s*["']?\s*[:=]\s*["']([^"']+)["']""",
             re.I,
