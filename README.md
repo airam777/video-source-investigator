@@ -19,10 +19,11 @@ Requires Python 3.10+; no third-party packages.
 python investigator.py saved-page.html
 python investigator.py saved-page.html --json report.json
 python prehraj_catalog.py saved-search-results.html --json catalog.json
+python provider_inspector.py saved-bombuj-page.html --base-url 'https://www.bombuj.si/online-film-...' --json providers.json
 python -m unittest discover -s tests -v
 ```
 
-On Android, save or share the page source as an HTML file, then run the script on a computer with Python. Use `prehraj_catalog.py` for a saved Přehraj.to search-results page and `investigator.py` for a saved video/detail page. The project currently analyses local files; it does not crawl sites.
+On Android, save or share the page source as an HTML file, then run the script on a computer with Python. Use `prehraj_catalog.py` for a saved Přehraj.to search-results page, `investigator.py` for a saved video/detail page, and `provider_inspector.py` to map visible iframe/link hostnames on a saved Bombuj-style page. The provider inspector reports host-level clues without printing opaque player paths or query strings. The project currently analyses local files; it does not crawl sites.
 
 ## Relationship to the public reference project
 
