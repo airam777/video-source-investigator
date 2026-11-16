@@ -119,7 +119,7 @@ def main():
                           ensure_ascii=False, indent=2)
     print(rendered)
     if args.json_path:
-        args.json_path.write_text(rendered + "\\n", encoding="utf-8")
+        args.json_path.write_text(rendered + "\n", encoding="utf-8")
 
 
 if __name__ == "__main__":
