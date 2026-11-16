@@ -139,6 +139,13 @@ class PageInspector(HTMLParser):
             })
 
 
+def _host_only(value: str) -> str:
+    parsed = urlparse(value)
+    if parsed.scheme in ("http", "https") and parsed.hostname:
+        return f"{parsed.scheme}://{parsed.netloc}/[reference hidden]"
+    return "[reference hidden]"
+
+
 def inspect(path: Path, base_url: str = "") -> dict:
     parser = PageInspector(base_url)
     parser.feed(path.read_text(encoding="utf-8", errors="replace"))
@@ -161,7 +168,8 @@ def inspect(path: Path, base_url: str = "") -> dict:
         "file": path.name,
         "page_title": " ".join(x for x in parser.title_parts if x),
         "page_metadata": {
-            k: parser.meta[k]
+            k: (parser.meta[k] if k in {"og:title", "og:site_name"}
+                else _host_only(parser.meta[k]))
             for k in ("og:title", "og:url", "og:site_name", "twitter:player")
             if k in parser.meta
         },
