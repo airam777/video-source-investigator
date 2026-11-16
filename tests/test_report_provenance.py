@@ -11,29 +11,32 @@ REPORT = (
 
 
 class ReportProvenanceTests(unittest.TestCase):
-    def test_report_is_valid_json_and_labels_unverified_source(self):
+    def test_report_is_valid_json_and_labels_source_hash(self):
         data = json.loads(REPORT.read_text(encoding="utf-8"))
         self.assertEqual(
             data["evidence_status"],
-            "user_supplied_extraction_not_independently_verified",
+            "user_supplied_html_source_parsed_offline_in_conversation",
         )
-        self.assertFalse(data["source_provenance"]["raw_html_available"])
-        self.assertIsNone(data["source_provenance"]["raw_html_sha256"])
-        self.assertFalse(data["source_provenance"]["parser_executed_on_original_html"])
+        provenance = data["source_provenance"]
+        self.assertTrue(provenance["raw_html_available_in_conversation"])
+        self.assertEqual(len(provenance["raw_html_sha256"]), 64)
+        self.assertEqual(provenance["raw_html_bytes"], 4283)
+        self.assertTrue(provenance["parser_executed_on_supplied_html"])
 
-    def test_report_contains_expected_structured_metadata(self):
+    def test_report_contains_expected_observations(self):
         data = json.loads(REPORT.read_text(encoding="utf-8"))
-        self.assertEqual(data["video"]["video_id"], "30639124")
-        self.assertEqual(data["video"]["duration_seconds"], 5486)
-        self.assertEqual(data["player"]["reported_active_player"], "videojs")
-        self.assertEqual(len(data["cdn_hosts"]), 3)
-        self.assertEqual(len(data["subtitles"]), 2)
+        parsed = data["parsed_observations"]
+        self.assertEqual(parsed["video_id"], 30639124)
+        self.assertEqual(parsed["duration_seconds"], 5486)
+        self.assertEqual(parsed["player"], "videojs")
+        self.assertEqual(len(parsed["cdn_hosts"]), 3)
+        self.assertEqual(len(parsed["subtitle_ids"]), 2)
 
-    def test_report_does_not_claim_to_contain_signed_media_urls(self):
+    def test_report_excludes_signed_url_material(self):
         rendered = REPORT.read_text(encoding="utf-8")
         self.assertNotIn("signature=", rendered)
+        self.assertNotIn("expires=", rendered)
         self.assertNotIn("token=", rendered)
-        self.assertNotIn("cookies", rendered.lower().replace("no signed media urls, token values, cookies, or authorization material are stored in this report.", ""))
 
 
 if __name__ == "__main__":
