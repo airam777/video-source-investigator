@@ -12,6 +12,7 @@ Local-first tooling for documenting the public structure and attribution evidenc
 - Inspects declared deferred-loader requests (such as jQuery AJAX) without sending them.
 - Produces one consolidated report using `analyze_page.py`, including SHA-256 provenance and evidence validation.
 - Writes redacted JSON and/or Markdown directly from the main analysis command.
+- Optionally exports an immutable Evidence Graph as a deterministic JSON audit envelope with `--export-evidence`.
 - Exports sanitized JSON and Markdown reports with provenance preserved and sensitive values redacted using `report_exporter.py`.
 - Redacts media paths and sensitive query parameters. It does not output playable media URLs.
 
@@ -22,6 +23,25 @@ Requires Python 3.10+; no third-party packages.
 ```bash
 python analyze_page.py saved-page.html --base-url 'https://prehraj.to/your/video/page' --json report-redacted.json --markdown report.md
 ```
+
+### Optional Evidence Graph export
+
+The Evidence Engine export is opt-in. Without `--export-evidence`, the existing CLI report and output behavior remain unchanged.
+
+```bash
+python analyze_page.py saved-page.html --base-url 'https://prehraj.to/your/video/page' --export-evidence evidence-audit.json
+```
+
+The audit envelope contains:
+
+- a manifest of immutable observations and relations, sorted by stable IDs;
+- read-only counts for observations, relations, and observation epistemic statuses (`fact`, `derived`, `unknown`);
+- a SHA-256 digest over the canonical manifest JSON (`sort_keys=True`, compact separators, UTF-8);
+- the schema version and tool metadata.
+
+The manifest preserves the actual Evidence Model fields, including document SHA-256, locator, normalized value, evidence status, adapter metadata, relation endpoints, and provenance observation IDs. The statistics do not alter the evidence records.
+
+For byte-for-byte reproducibility, `audit_metadata.generated_at` and `engine_version` are currently `null`: a wall-clock timestamp or an undefined package version would make identical exports differ. The manifest checksum is independent of the envelope metadata.
 
 Focused tools:
 

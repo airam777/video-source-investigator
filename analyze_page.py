@@ -21,6 +21,9 @@ from prehraj_catalog import parse_catalog
 from provenance_inspector import inspect_html as inspect_provenance
 from provider_inspector import inspect as inspect_provider
 from report_exporter import export_report
+from core.document_context import AnalysisContext
+from core.engine import EvidenceEngine
+from core.exporter import export_evidence
 
 
 def analyze(path: Path, base_url: str = "") -> dict:
@@ -88,11 +91,27 @@ def main() -> int:
     parser.add_argument("--base-url", default="", help="Original page URL for resolving relative references")
     parser.add_argument("--json", dest="json_path", type=Path, help="Write sanitized JSON report")
     parser.add_argument("--markdown", dest="markdown_path", type=Path, help="Write sanitized Markdown report")
+    parser.add_argument(
+        "--export-evidence",
+        dest="evidence_path",
+        type=Path,
+        metavar="FILE",
+        help="Write a deterministic Evidence Graph audit JSON envelope (opt-in)",
+    )
     args = parser.parse_args()
     try:
         report = analyze(args.html, args.base_url)
         safe_report = export_report(report, args.json_path, args.markdown_path)
-    except (OSError, ValueError) as exc:
+        if args.evidence_path is not None:
+            raw_bytes = args.html.read_bytes()
+            context = AnalysisContext(
+                content=raw_bytes,
+                source_name=args.html.name,
+                base_url=args.base_url or None,
+            )
+            graph = EvidenceEngine().process(report, context)
+            export_evidence(graph, args.evidence_path)
+    except (OSError, ValueError, TypeError) as exc:
         parser.error(str(exc))
     print(json.dumps(safe_report, ensure_ascii=False, indent=2))
     return 0
