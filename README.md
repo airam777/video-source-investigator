@@ -77,7 +77,7 @@ Do not paste account cookies, authorization headers, or signed media URLs into G
 
 ## Reference implementation
 
-The public project [MatheusJey/stremio-prehaj](https://github.com/MatheusJey/stremio-prehaj) demonstrates a Přehraj.to search-to-stream workflow. Its public source was reviewed to understand the stages of search, catalog parsing, detail-page inspection, and player configuration.
+The public project [MatheusJey/stremio-prehraj](https://github.com/MatheusJey/stremio-prehraj) demonstrates a Přehraj.to search-to-stream workflow. Its public source was reviewed to understand the stages of search, catalog parsing, detail-page inspection, and player configuration.
 
 This repository deliberately implements offline inspection only. It does not fetch pages, call hidden AJAX endpoints, replay browser sessions, resolve third-party player pages, execute JavaScript, bypass access controls, download media, or expose direct playback URLs.
 
