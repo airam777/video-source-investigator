@@ -1,0 +1,56 @@
+{
+  "investigation_target": "https://prehraj.to/ali-g-gdo-bit-ja-2026-cz-dabing/a6b13b0b09ce302b",
+  "evidence_status": "user_supplied_extraction_not_independently_verified",
+  "source_provenance": {
+    "description": "Structured metadata supplied in the conversation; this is not the original HTML source.",
+    "raw_html_available": false,
+    "raw_html_sha256": null,
+    "parser_executed_on_original_html": false
+  },
+  "video": {
+    "video_id": "30639124",
+    "video_hash": "a6b13b0b09ce302b",
+    "title": "#Ali G - Gdo bít já (2026) CZ DABING",
+    "duration_seconds": 5486,
+    "reported_format": "mkv",
+    "reported_resolution": "1920x1080"
+  },
+  "player": {
+    "reported_active_player": "videojs",
+    "reported_implementation": "VideoJsPlayer"
+  },
+  "cdn_hosts": [
+    "pf-storage1.premiumcdn.net",
+    "pf-storage3.premiumcdn.net",
+    "pf-storage5.premiumcdn.net"
+  ],
+  "subtitles": [
+    {
+      "id": "13781981",
+      "lang": "cze",
+      "default": true
+    },
+    {
+      "id": "13781982",
+      "lang": "cze1",
+      "default": false
+    }
+  ],
+  "security_token_field_names": [
+    "videoStartedToken",
+    "videoCommissionToken",
+    "videoViewProgressNotifyToken"
+  ],
+  "ajax_endpoint_names": [
+    "videoStarted",
+    "videoViewCommission",
+    "videoProgressNotify",
+    "videoVisit"
+  ],
+  "limitations": [
+    "No original HTML bytes were supplied with this structured record.",
+    "The original HTML SHA-256 cannot be calculated from metadata or a URL.",
+    "CDN hostnames, player selection, subtitles, and endpoint names remain reported observations until verified against the original HTML.",
+    "No signed media URLs, token values, cookies, or authorization material are stored in this report."
+  ]
+}
