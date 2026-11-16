@@ -151,7 +151,7 @@ def main() -> int:
     rendered = json.dumps(report, ensure_ascii=False, indent=2)
     print(rendered)
     if args.json_path:
-        args.json_path.write_text(rendered + "\\n", encoding="utf-8")
+        args.json_path.write_text(rendered + "\n", encoding="utf-8")
         print(f"Report saved to {args.json_path}")
     return 0
 
