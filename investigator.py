@@ -17,6 +17,7 @@ from urllib.parse import urljoin, urlparse, urlunparse, parse_qsl, urlencode
 VIDEO_META_KEYS = {"og:video", "og:video:url", "og:video:secure_url",
                    "twitter:player", "twitter:player:stream"}
 MEDIA_EXTENSIONS = (".mp4", ".m3u8", ".mpd", ".webm", ".mov", ".m4v")
+TRACK_EXTENSIONS = (".vtt", ".srt")
 SENSITIVE_KEY_PATTERN = re.compile(r"token|expires|signature|sig|auth|key|policy|credential|jwt|session|pass", re.I)
 
 
@@ -92,8 +93,12 @@ def inspect_html(html: str, source_name: str = "<memory>", base_url: str = "") -
     # do not return their full signed paths or query strings.
     for match in re.findall(r"""https?://[^\s"'<>\\]+""", html, flags=re.I):
         candidate = match.rstrip("),;]")
+        path_lower = urlparse(candidate).path.lower()
         if is_media_url(candidate):
             parser.items.append({"kind": "media-reference", "attribute": "inline",
+                                 "url": candidate})
+        elif path_lower.endswith(TRACK_EXTENSIONS):
+            parser.items.append({"kind": "track-reference", "attribute": "inline",
                                  "url": candidate})
 
     candidates, seen = [], set()
@@ -103,15 +108,18 @@ def inspect_html(html: str, source_name: str = "<memory>", base_url: str = "") -
         resolved = safe_url(raw, base)
         parsed = urlparse(resolved)
         media = is_media_url(resolved)
-        # Hide direct media paths: report provider host and media type only.
-        shown = parsed.scheme + "://" + parsed.netloc + "/[media URL hidden]" if media else resolved
+        track = parsed.path.lower().endswith(TRACK_EXTENSIONS)
+        # Hide media and subtitle paths: report provider host and resource type only.
+        hidden_resource = media or track
+        shown = (parsed.scheme + "://" + parsed.netloc +
+                 ("/[media URL hidden]" if media else "/[track URL hidden]")) if hidden_resource else resolved
         key = (item["kind"], item["attribute"], shown)
         if key in seen:
             continue
         seen.add(key)
         candidates.append({"kind": item["kind"], "attribute": item["attribute"],
                            "url": shown, "host": parsed.hostname or "(relative)",
-                           "media_reference": media})
+                           "media_reference": media, "track_reference": track})
         if parsed.hostname and parsed.hostname not in hosts[item["kind"]]:
             hosts[item["kind"]].append(parsed.hostname)
 
