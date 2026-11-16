@@ -116,6 +116,8 @@ class PageInspector(HTMLParser):
             self.player_configs.append({"player": "JW Player", "configuration": "setup/config reference"})
         if "videojs(" in lower or "video.js" in lower:
             self.player_configs.append({"player": "Video.js", "configuration": "initialization/config reference"})
+        elif re.search(r"""\\bplayer\\s*=\\s*['"]videojs['"]""", lower):
+            self.player_configs.append({"player": "Video.js", "configuration": "selected player variable"})
         source_pattern = re.compile(
             r"""(?:file|src|contenturl)\s*["']?\s*[:=]\s*["']([^"']+)["']""",
             re.I,
