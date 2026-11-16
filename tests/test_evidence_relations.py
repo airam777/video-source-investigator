@@ -8,4 +8,7 @@ class EvidenceRelationTests(unittest.TestCase):
         self.assertEqual(len(EvidenceGraphContainer((observation("node-a"), observation("node-b"), observation("node-c")), edges).relations), 2)
     def test_relation_requires_observation_provenance(self):
         with self.assertRaises(ValueError): EvidenceRelation("edge-a", RelationType.REFERENCES, "node-a", "node-b", ())
+    def test_relation_provenance_must_be_a_unique_collection(self):
+        with self.assertRaises(ValueError): EvidenceRelation("edge-b", RelationType.REFERENCES, "node-a", "node-b", "node-a")
+        with self.assertRaises(ValueError): EvidenceRelation("edge-c", RelationType.REFERENCES, "node-a", "node-b", ("node-a", "node-a"))
 if __name__ == "__main__": unittest.main()
