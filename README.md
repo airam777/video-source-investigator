@@ -1,57 +1,71 @@
 # Video Source Investigator
 
-A local-first research helper for examining HTML/page source that you are authorized to inspect.
+Local-first tooling for documenting the public structure of a video page from HTML that you are authorized to inspect.
 
-## Current capabilities
+## What it does
 
-- Reads a saved HTML or page-source file (no network access required).
-- Parses locally saved Přehraj.to search-result pages for visible title, result-page URL, file size, duration, and thumbnail metadata.
-- Finds visible iframe embeds, video/source references, Open Graph/Twitter player metadata, and relevant player links.
-- Recognizes common JW Player and Video.js configuration signatures in inline scripts.
-- Classifies explicitly declared media types such as MP4, WebM, HLS playlists (M3U8), and MPEG-DASH manifests (MPD).
-- Inspects deferred player-loader declarations in saved HTML, including declared AJAX endpoint, method, parameter names, and related DOM selectors, without sending the request.
-- Includes an offline extractor for media URLs explicitly present in locally saved, authorized HTML.
-- Exports JSON reports for research notes.
+- Parses saved Přehraj.to catalog HTML for visible title, page URL, file size, duration, and thumbnail.
+- Finds visible iframe references, lazy-loaded embed attributes, video/source elements, and Open Graph/Twitter player metadata.
+- Recognizes common JW Player and Video.js configuration signatures.
+- Identifies declared media formats (MP4, WebM, HLS/M3U8, MPEG-DASH/MPD) and the associated host.
+- Inspects declared deferred-loader requests (such as jQuery AJAX) without sending them.
+- Produces one consolidated JSON report using `analyze_page.py`.
+- Redacts media paths and sensitive query parameters. It does not output playable media URLs.
 
-## Run
+## Quick start
 
 Requires Python 3.10+; no third-party packages.
 
 ```bash
-python analyze_page.py saved-page.html --base-url 'https://prehraj.to/watch/...' --json full-report.json
-python investigator.py saved-page.html
-python investigator.py saved-page.html --base-url 'https://prehraj.to/watch/...' --json report.json
+python analyze_page.py saved-page.html --base-url 'https://prehraj.to/your/video/page' --json report.json
+```
+
+Focused tools:
+
+```bash
+python investigator.py saved-page.html --base-url 'https://prehraj.to/your/video/page'
 python prehraj_catalog.py saved-search-results.html --json catalog.json
-python provider_inspector.py saved-page.html --base-url 'https://example.test/watch/...' --json providers.json
+python provider_inspector.py saved-page.html --base-url 'https://prehraj.to/your/video/page' --json providers.json
 python deferred_player_inspector.py saved-page.html --json loader.json
 python -m unittest discover -s tests -v
 ```
 
-The media-reference inspector recognizes explicitly declared MP4, WebM, HLS (M3U8), and MPEG-DASH (MPD) references in standard HTML media elements, selected social metadata, and plainly quoted `file`/`src` values in inline player configuration. It reports provider host and media format only: media paths and query strings are always hidden, so reports cannot be used as playback links.
+## Report contents
 
-`analyze_page.py` combines the available offline inspectors into one JSON report. The individual tools remain available for focused debugging. The media-reference inspector reports only provider host and format; it never outputs a playable URL.
+The consolidated report includes:
 
-The deferred-player inspector is static: it reports that a page declares a loader request and summarizes its visible configuration. It does not call the endpoint, fetch provider pages, replay browser sessions, or resolve streams.
+- page title and source URL;
+- provider/iframe hostnames and player-library clues;
+- visible reference attributes, with media paths hidden;
+- static deferred-loader declarations, endpoint path, HTTP method, and parameter names;
+- media format and host evidence;
+- catalog metadata if the supplied HTML is a search-results page.
 
-On Android, save or share the page source as an HTML file, then run the script on a computer with Python. Use `prehraj_catalog.py` for a saved Přehraj.to search-results page, `investigator.py` for a saved video/detail page, and `provider_inspector.py` to map visible iframe/link hostnames and recognize player configuration patterns from a saved page.
+## Android source capture
 
-## Relationship to the public reference project
+Use the browser's ordinary **Save page** or **Share** option if it can export the page as HTML. If the browser only displays source text, save that text as a UTF-8 `.html` file. Transfer the file to a computer and run the quick-start command above. Keep the original file unchanged for evidence integrity.
 
-The project [MatheusJey/stremio-prehraj](https://github.com/MatheusJey/stremio-prehraj) demonstrates a Přehraj.to search-to-stream workflow. This repository takes inspiration from its staged inspection approach, but focuses on offline analysis of supplied, authorized page source.
+Do not paste account cookies, authorization headers, or signed media URLs into GitHub issues or commits. You can attach the HTML file privately in the ChatGPT conversation for analysis.
 
-## Scope and limitations
+## Reference implementation
 
-- The tools do not crawl sites, call hidden AJAX endpoints, replay session cookies, resolve third-party player pages, execute JavaScript, bypass access controls, or download media.
-- The extractor only reports media URLs explicitly declared in the local HTML supplied to it; it does not discover URLs hidden behind provider-side requests or runtime protections.
-- Player signatures and hosting domains are technical clues, not proof of uploader identity or distribution rights.
+The public project [MatheusJey/stremio-prehraj](https://github.com/MatheusJey/stremio-prehraj) demonstrates a Přehraj.to search-to-stream workflow. Its public source was reviewed to understand the stages of search, catalog parsing, detail-page inspection, and player configuration.
+
+This repository deliberately implements offline inspection only. It does not fetch pages, call hidden AJAX endpoints, replay browser sessions, resolve third-party player pages, execute JavaScript, bypass access controls, download media, or expose direct playback URLs.
+
+## Interpretation and limitations
+
+- A referenced host is a technical clue, not proof of who uploaded the content.
+- A media host or format does not establish distribution rights.
 - A public page or playable embed does not prove that distribution is licensed.
-- Signed URLs can contain temporary access credentials; reports intentionally omit query strings unless the explicit full-URL option is used for authorized test material.
+- Dynamic content loaded only at runtime will not appear in a static HTML report.
+- To investigate the actual Přehraj.to item, the saved HTML source of that exact detail page is still required.
 
+## Development and CI
 
-## Reference implementation analysis
+```bash
+python -m compileall -q .
+python -m unittest discover -s tests -v
+```
 
-See [`docs/reference-project-analysis.md`](docs/reference-project-analysis.md) for a source-based breakdown of the public `MatheusJey/stremio-prehraj` architecture and how this passive investigation toolkit differs.
-
-## Continuous integration
-
-GitHub Actions runs the Python test suite on pushes and pull requests using `.github/workflows/tests.yml`.
+GitHub Actions runs compilation and unit tests on Python 3.10, 3.11, and 3.12 for pushes and pull requests.
