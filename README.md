@@ -10,7 +10,8 @@ Local-first tooling for documenting the public structure and attribution evidenc
 - Identifies declared media formats (MP4, WebM, HLS/M3U8, MPEG-DASH/MPD) and the associated host.
 - Extracts explicit uploader/author attribution from metadata, JSON-LD, microdata, and visibly labelled profile links.
 - Inspects declared deferred-loader requests (such as jQuery AJAX) without sending them.
-- Produces one consolidated JSON report using `analyze_page.py`.
+- Produces one consolidated report using `analyze_page.py`, including SHA-256 provenance and evidence validation.
+- Writes redacted JSON and/or Markdown directly from the main analysis command.
 - Exports sanitized JSON and Markdown reports with provenance preserved and sensitive values redacted using `report_exporter.py`.
 - Redacts media paths and sensitive query parameters. It does not output playable media URLs.
 
@@ -19,7 +20,7 @@ Local-first tooling for documenting the public structure and attribution evidenc
 Requires Python 3.10+; no third-party packages.
 
 ```bash
-python analyze_page.py saved-page.html --base-url 'https://prehraj.to/your/video/page' --json report.json
+python analyze_page.py saved-page.html --base-url 'https://prehraj.to/your/video/page' --json report-redacted.json --markdown report.md
 ```
 
 Focused tools:
