@@ -65,6 +65,23 @@ class LegacyReportAdapterTests(unittest.TestCase):
         self.assertNotIn("private/file.mp4", rendered)
         self.assertNotIn("DO_NOT_KEEP", rendered)
 
+    def test_rejects_host_field_containing_url_path_or_query(self):
+        report = {
+            "visible_references": [{
+                "host": "cdn.example.test/private/path?token=DO_NOT_KEEP",
+                "url": "https://cdn.example.test/private/path?token=DO_NOT_KEEP",
+            }]
+        }
+        graph = LegacyReportAdapter().adapt(report, self.context)
+        rendered = json.dumps(
+            [{"kind": item.kind, "value": item.value.value} for item in graph.observations],
+            default=str,
+        )
+        self.assertNotIn("private/path", rendered)
+        self.assertNotIn("DO_NOT_KEEP", rendered)
+        self.assertFalse(any(item.kind == "legacy_report.reference_host" for item in graph.observations))
+        self.assertEqual(len(graph.relations), 0)
+
     def test_builds_provenance_backed_reference_relation(self):
         graph = LegacyReportAdapter().adapt(self.report, self.context)
         self.assertEqual(len(graph.relations), 1)
